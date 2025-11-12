@@ -1,4 +1,3 @@
-// Carrito.jsx - TODO JUNTO EN UN SOLO ARCHIVO
 import React, { useState, useEffect } from 'react';
 import '../estilos/Carrito.css';
 
@@ -84,7 +83,6 @@ export function Carrito() {
   const [carrito, setCarrito] = useState([]);
   const [descuentoAplicado, setDescuentoAplicado] = useState(0);
   const [couponCode, setCouponCode] = useState('');
-  const [totalUnidades, setTotalUnidades] = useState(0);
 
   // ===== EFECTOS =====
   useEffect(() => {
@@ -93,7 +91,6 @@ export function Carrito() {
     if (carritoGuardado) {
       const carritoParsed = JSON.parse(carritoGuardado);
       setCarrito(carritoParsed);
-      actualizarContador(carritoParsed);
     }
   }, []);
 
@@ -106,12 +103,6 @@ export function Carrito() {
   const guardarCarrito = (nuevoCarrito) => {
     localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
     setCarrito(nuevoCarrito);
-    actualizarContador(nuevoCarrito);
-  };
-
-  const actualizarContador = (carritoActual) => {
-    const totalUnidades = carritoActual.reduce((acc, item) => acc + item.cantidad, 0);
-    setTotalUnidades(totalUnidades);
   };
 
   const calcularTotal = () => {
@@ -183,7 +174,6 @@ export function Carrito() {
   // ===== APLICAR CUPÓN =====
   const aplicarCupon = () => {
     const codigo = couponCode.toUpperCase().trim();
-
     if (cupones.hasOwnProperty(codigo)) {
       const descuento = cupones[codigo];
       setDescuentoAplicado(descuento);
@@ -201,7 +191,6 @@ export function Carrito() {
       setCarrito([]);
       setDescuentoAplicado(0);
       setCouponCode('');
-      setTotalUnidades(0);
     }
   };
 
