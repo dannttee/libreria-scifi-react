@@ -1,0 +1,228 @@
+/* ==================== PRODUCTO DETALLE ==================== */
+
+.image-slider-container {
+  position: relative;
+  height: 350px;
+  background: #f6f6f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.image-slider-container img {
+  max-height: 88%;
+  max-width: 98%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  user-select: none;
+  padding: 10px 15px;
+}
+
+.slider-arrow:hover {
+  color: rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%) scale(1.2);
+}
+
+.left-arrow {
+  left: 15px;
+}
+
+.right-arrow {
+  right: 15px;
+}
+
+.miniatures-container {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.miniatures-container img {
+  transition: transform 0.3s ease, border 0.3s ease;
+}
+
+.miniatures-container img:hover {
+  transform: scale(1.05);
+}
+
+/* INFORMACIÓN DEL PRODUCTO */
+h2 {
+  font-weight: bold;
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.text-muted {
+  color: #999 !important;
+  font-style: italic;
+}
+
+h3 {
+  font-size: 1.8rem;
+  color: #667eea;
+  font-weight: bold;
+}
+
+p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* FORMULARIO */
+.form-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-control {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 1rem;
+  transition: border 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-agregar {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 14px 25px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 20px auto;
+}
+
+.btn-agregar:hover {
+  background: linear-gradient(135deg, #764ba2, #667eea);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-agregar:active {
+  transform: translateY(-1px);
+}
+
+/* PRODUCTOS RELACIONADOS */
+.productos-relacionados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.producto-item {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 15px;
+  text-align: center;
+}
+
+.producto-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.producto-item img {
+  width: 100%;
+  height: 280px;
+  object-fit: contain;
+  background: #f7f7f7;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;
+}
+
+.producto-item:hover img {
+  transform: scale(1.05);
+}
+
+.producto-item h6 {
+  font-size: 1.05rem;
+  color: #333;
+  margin: 12px 0;
+  font-weight: bold;
+}
+
+.producto-item .text-muted {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.producto-item .text-primary {
+  font-size: 1.2rem;
+  color: #667eea;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.btn-ver-detalle {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn-ver-detalle:hover {
+  background: linear-gradient(135deg, #764ba2, #667eea);
+  transform: scale(1.05);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  .image-slider-container {
+    height: 250px;
+  }
+
+  .productos-relacionados {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .producto-item img {
+    height: 200px;
+  }
+}

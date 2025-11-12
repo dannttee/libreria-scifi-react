@@ -1,0 +1,285 @@
+/* ==================== ESTILOS PAGO CON ERROR ==================== */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+/* ==================== HEADER ERROR ==================== */
+.header.error {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+  color: white;
+  padding: 40px 20px;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.error-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.header.error h1 {
+  font-size: 2.5rem;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  margin: 10px 0 0 0;
+}
+
+/* ==================== SECCIONES ==================== */
+.section {
+  background-color: white;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid #ff6b6b;
+}
+
+.section h3 {
+  color: #333;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* ==================== GRID DE INFORMACIÓN ==================== */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item label {
+  display: block;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.info-item p {
+  color: #333;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* ==================== TABLA DE PRODUCTOS ==================== */
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.products-table thead {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.products-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: bold;
+  border: 1px solid #ddd;
+}
+
+.products-table td {
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.products-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.products-table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.products-table img {
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* ==================== SECCIÓN DE ERROR ==================== */
+.error-section {
+  background-color: #fff3cd;
+  border-left: 5px solid #ff6b6b;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 8px;
+}
+
+.error-section h2 {
+  color: #d32f2f;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.error-details {
+  background-color: white;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #d32f2f;
+}
+
+.error-details p {
+  color: #333;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ==================== SECCIÓN TOTAL ==================== */
+.total-section {
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: right;
+  margin-bottom: 25px;
+  border: 2px solid #ddd;
+}
+
+.total-section h3 {
+  color: #333;
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+/* ==================== BOTONES ==================== */
+.buttons-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-reintentar {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.btn-reintentar:hover {
+  background-color: #e63946;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.btn-secondary {
+  background-color: #ffa500;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #ff9800;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.3);
+}
+
+.btn-tertiary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-tertiary:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+/* ==================== RESPONSIVO ==================== */
+@media (max-width: 768px) {
+  .header.error h1 {
+    font-size: 2rem;
+  }
+
+  .error-icon {
+    font-size: 45px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .products-table {
+    font-size: 0.9rem;
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 10px;
+  }
+
+  .buttons-container {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .total-section {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  .header.error {
+    padding: 25px 15px;
+  }
+
+  .header.error h1 {
+    font-size: 1.5rem;
+  }
+
+  .error-icon {
+    font-size: 40px;
+  }
+
+  .section {
+    padding: 15px;
+  }
+
+  .products-table {
+    font-size: 0.8rem;
+  }
+}

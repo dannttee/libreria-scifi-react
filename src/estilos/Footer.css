@@ -1,0 +1,11 @@
+/* FOOTER */
+.footer {
+  background: linear-gradient(135deg, #1a1f3a 0%, #2d1b4e 100%);
+  color: #ffffff;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-top: none;
+  margin-top: 3rem;
+  width: 100%;
+  box-sizing: border-box;
+}

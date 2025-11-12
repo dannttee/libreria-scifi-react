@@ -1,0 +1,170 @@
+/* ============ BLOGS - ENHANCED STYLES ============ */
+
+/* CONTENEDOR PRINCIPAL */
+.caso-blog {
+  display: block !important;
+  max-width: 1100px !important;
+  width: 100% !important;
+  margin: 3rem auto !important;
+  padding: 2rem 1rem !important;
+}
+
+/* CONTENEDOR DE CADA DETALLE */
+.caso-detalle {
+  display: block !important;
+  margin-bottom: 3.5rem !important;
+  padding: 2.5rem !important;
+  background: linear-gradient(135deg, rgba(17, 45, 78, 0.1) 0%, rgba(0, 217, 255, 0.05) 100%) !important;
+  border-left: 5px solid #00d9ff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 217, 255, 0.1) !important;
+  transition: all 0.4s ease !important;
+}
+
+.caso-detalle:hover {
+  transform: translateX(10px) !important;
+  box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2) !important;
+  background: linear-gradient(135deg, rgba(17, 45, 78, 0.15) 0%, rgba(0, 217, 255, 0.1) 100%) !important;
+}
+
+/* TÍTULOS */
+.caso-titulo {
+  text-align: center !important;
+  color: #00d9ff !important;
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 2.5rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+  text-shadow: 0 2px 8px rgba(0, 217, 255, 0.3) !important;
+  position: relative !important;
+  padding-bottom: 1.5rem !important;
+}
+
+.caso-titulo::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 100px !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, transparent, #00d9ff, transparent) !important;
+}
+
+/* DESCRIPCIÓN */
+.caso-desc {
+  text-align: justify !important;
+  color: #ddd !important;
+  line-height: 1.9 !important;
+  font-size: 1.05rem !important;
+  margin: 1.8rem 0 !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* CONTENEDOR DE IMAGEN */
+.caso-imagen {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 2.5rem 0 !important;
+  perspective: 1000px !important;
+}
+
+/* IMAGEN CON EFECTOS */
+.caso-imagen img {
+  max-width: 100% !important;
+  width: 550px !important;
+  height: auto !important;
+  border-radius: 15px !important;
+  box-shadow: 
+    0 10px 40px rgba(0, 217, 255, 0.3),
+    inset 0 0 20px rgba(0, 217, 255, 0.1) !important;
+  object-fit: cover !important;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1) !important;
+  border: 2px solid rgba(0, 217, 255, 0.4) !important;
+}
+
+.caso-imagen img:hover {
+  transform: scale(1.05) rotateX(5deg) !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 217, 255, 0.5),
+    inset 0 0 30px rgba(0, 217, 255, 0.2) !important;
+  border-color: #00d9ff !important;
+}
+
+/* MOBILE - TABLET */
+@media (max-width: 768px) {
+  .caso-blog {
+    padding: 1rem 0.5rem !important;
+    margin: 2rem auto !important;
+  }
+
+  .caso-detalle {
+    padding: 1.8rem !important;
+    margin-bottom: 2.5rem !important;
+    border-left: 4px solid #00d9ff !important;
+  }
+
+  .caso-titulo {
+    font-size: 1.7rem !important;
+    margin-bottom: 1.8rem !important;
+    letter-spacing: 1px !important;
+  }
+
+  .caso-titulo::after {
+    width: 80px !important;
+  }
+
+  .caso-desc {
+    font-size: 0.98rem !important;
+    line-height: 1.8 !important;
+  }
+
+  .caso-imagen {
+    margin: 2rem 0 !important;
+  }
+
+  .caso-imagen img {
+    width: 100% !important;
+    max-width: 420px !important;
+    border-radius: 12px !important;
+  }
+}
+
+/* MÓVIL PEQUEÑO */
+@media (max-width: 480px) {
+  .caso-blog {
+    padding: 0.8rem 0 !important;
+    margin: 1.5rem auto !important;
+  }
+
+  .caso-detalle {
+    padding: 1.3rem !important;
+    margin-bottom: 2rem !important;
+    border-left: 3px solid #00d9ff !important;
+  }
+
+  .caso-titulo {
+    font-size: 1.4rem !important;
+    margin-bottom: 1.3rem !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .caso-titulo::after {
+    width: 60px !important;
+    height: 2px !important;
+  }
+
+  .caso-desc {
+    font-size: 0.92rem !important;
+    line-height: 1.7 !important;
+  }
+
+  .caso-imagen img {
+    max-width: 100% !important;
+    border-radius: 10px !important;
+  }
+}
