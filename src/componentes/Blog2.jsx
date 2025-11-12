@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import '../estilos/Blogs.css';
 
 export default function Blog2() {

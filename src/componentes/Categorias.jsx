@@ -196,7 +196,8 @@ function Categorias() {
   // Filtrar cuando cambia categoría
   useEffect(() => {
     filtrarCategoria(categoriaActual);
-  }, [categoriaActual]);
+  }, [categoriaActual, filtrarCategoria]);
+
 
   return (
     <div className="container">

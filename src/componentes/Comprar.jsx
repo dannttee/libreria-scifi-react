@@ -1,7 +1,6 @@
 // Comprar.jsx - COMPONENTE REACT
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../componentes/Header';
 import '../estilos/Comprar.css';
 
 const REGIONES_COMUNAS = {

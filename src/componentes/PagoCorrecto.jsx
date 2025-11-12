@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../componentes/Header';
 import '../estilos/PagoCorrecto.css';
 
 export default function PagoCorrecto() {

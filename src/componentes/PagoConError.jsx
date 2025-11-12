@@ -1,4 +1,3 @@
-// PagoConError.jsx - TODO JUNTO EN UN SOLO ARCHIVO
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../estilos/PagoConError.css';
@@ -11,6 +10,7 @@ export function PagoConError() {
 
   useEffect(() => {
     cargarDatosCompraError();
+    // eslint-disable-next-line
   }, []);
 
   // ===== CARGAR DATOS DE LA COMPRA CON ERROR =====
