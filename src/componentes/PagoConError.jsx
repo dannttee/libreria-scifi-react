@@ -13,7 +13,7 @@ export function PagoConError() {
     // eslint-disable-next-line
   }, []);
 
-  // ===== CARGAR DATOS DE LA COMPRA CON ERROR =====
+  // CARGAR DATOS DE LA COMPRA CON ERROR 
   const cargarDatosCompraError = () => {
     const carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
     const datosFormularioError = JSON.parse(localStorage.getItem('datosFormularioError')) || {};
@@ -31,25 +31,25 @@ export function PagoConError() {
     setRazonError(razon);
   };
 
-  // ===== REINTENTAR COMPRA =====
+  // REINTENTAR COMPRA 
   const reintentar = () => {
     localStorage.setItem('datosCompraTemporal', JSON.stringify(datosFormulario));
     localStorage.removeItem('datosFormularioError');
     navigate('/comprar');
   };
 
-  // ===== IR AL CARRITO =====
+  // IR AL CARRITO 
   const irAlCarrito = () => {
     navigate('/carrito');
   };
 
-  // ===== IR AL INICIO =====
+  // IR AL INICIO
   const irAlInicio = () => {
     localStorage.removeItem('datosFormularioError');
     navigate('/');
   };
 
-  // ===== CÁLCULOS =====
+  // CÁLCULOS 
   let total = 0;
   carrito.forEach(producto => {
     total += producto.precio * producto.cantidad;

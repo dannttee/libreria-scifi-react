@@ -78,6 +78,13 @@ const productos = [
   },
 ];
 
+// ===== FUNCIÓN AUXILIAR PARA NORMALIZAR RUTAS =====
+const normalizarNombreImagen = (rutaImagen) => {
+  // Extrae solo el nombre del archivo, sin rutas
+  if (!rutaImagen) return '';
+  return rutaImagen.split('/').pop().split('\\').pop();
+};
+
 export function Carrito() {
   // ===== ESTADO =====
   const [carrito, setCarrito] = useState([]);
@@ -90,7 +97,12 @@ export function Carrito() {
     const carritoGuardado = localStorage.getItem("carrito");
     if (carritoGuardado) {
       const carritoParsed = JSON.parse(carritoGuardado);
-      setCarrito(carritoParsed);
+      // Normalizar imágenes al cargar
+      const carritoNormalizado = carritoParsed.map(item => ({
+        ...item,
+        imagen: normalizarNombreImagen(item.imagen)
+      }));
+      setCarrito(carritoNormalizado);
     }
   }, []);
 
@@ -101,8 +113,13 @@ export function Carrito() {
   };
 
   const guardarCarrito = (nuevoCarrito) => {
-    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
-    setCarrito(nuevoCarrito);
+    // Normalizar imágenes antes de guardar
+    const carritoNormalizado = nuevoCarrito.map(item => ({
+      ...item,
+      imagen: normalizarNombreImagen(item.imagen)
+    }));
+    localStorage.setItem("carrito", JSON.stringify(carritoNormalizado));
+    setCarrito(carritoNormalizado);
   };
 
   const calcularTotal = () => {
@@ -136,7 +153,7 @@ export function Carrito() {
         nombre: producto.nombre,
         autor: producto.autor,
         precio: producto.precio,
-        imagen: producto.img_delantera,
+        imagen: normalizarNombreImagen(producto.img_delantera),
         cantidad
       });
     }
@@ -268,6 +285,7 @@ export function Carrito() {
                         src={`${IMG_PATH}${item.imagen}`} 
                         alt={`Portada de ${item.nombre}`}
                         className="tabla-img"
+                        onError={(e) => { e.target.src = IMG_PATH + 'placeholder.jpg'; }}
                       />
                     </td>
                     <td>{item.nombre}</td>

@@ -83,13 +83,13 @@ export default function Comprar() {
   const procesarCompra = (e) => {
     e.preventDefault();
 
-    // ===== VALIDACIÓN 1: Carrito vacío =====
+    // VALIDACIÓN 1: Carrito vacío
     if (carrito.length === 0) {
       alert("El carrito está vacío");
       return;
     }
 
-    // ===== VALIDACIÓN 2: Email inválido =====
+    // VALIDACIÓN 2: Email inválido 
     if (!validarCorreo(formData.email)) {
       localStorage.setItem("datosFormularioError", JSON.stringify({
         ...formData,
@@ -99,7 +99,7 @@ export default function Comprar() {
       return;
     }
 
-    // ===== VALIDACIÓN 3: Campos incompletos =====
+    // VALIDACIÓN 3: Campos incompletos 
     if (!formData.calle || !formData.region || !formData.comuna || !formData.nombre || !formData.apellidos) {
       localStorage.setItem("datosFormularioError", JSON.stringify({
         ...formData,
@@ -109,7 +109,7 @@ export default function Comprar() {
       return;
     }
 
-    // ===== COMPRA EXITOSA =====
+    // COMPRA EXITOSA 
     const compra = {
       id: Date.now(),
       fecha: new Date().toLocaleDateString('es-ES'),

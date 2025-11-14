@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../estilos/Categorias.css';
 
-// ----- Cambia solo: productosCategoria fuera del componente -----
+// Cambia solo: productosCategoria fuera del componente 
 const productosCategoria = {
   "Ciencia ficción": [
     { id: 'dune', nombre: 'Dune', autor: 'Frank Herbert', precio: 9092, imagen: './imagenes/DUNE.jpg' },
@@ -31,7 +31,7 @@ const productosCategoria = {
   ]
 };
 
-// ------- Componente principal -------
+// Componente principal 
 function Categorias() {
   const [categoriaActual, setCategoriaActual] = useState('Ciencia ficción');
   const [productosFiltrados, setProductosFiltrados] = useState([]);
@@ -121,7 +121,7 @@ function Categorias() {
                   <img
                     src={producto.imagen}
                     alt={producto.nombre}
-                    onError={(e) => { e.target.src = './imagenes/placeholder.jpg'; }}
+                    onError={(e) => { e.target.src = '../imagenes/placeholder.jpg'; }}
                   />
                 </div>
                 <div className="product-info">
