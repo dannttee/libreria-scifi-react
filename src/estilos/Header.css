@@ -1,0 +1,139 @@
+/* ENCABEZADO */
+.header {
+  background: linear-gradient(135deg, #1a1f3a 0%, #2d1b4e 100%);
+  padding: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  border-bottom: none;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.navbar {
+  display: flex;
+  justify-content: center;  /* ← Cambio aquí: center en lugar de space-between */
+  align-items: center;
+  gap: 40px;  /* ← Aumenta el espacio entre logo y links */
+  padding: 10px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;  /* ← Permite que se envuelva en móviles */
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: opacity 0.3s ease;
+  flex-shrink: 0;
+}
+
+.logo-container:hover {
+  opacity: 0.8;
+}
+
+.logo-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+
+.logo-text {
+  color: #ff006e;
+  font-size: 1.1rem;
+  text-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #00d9ff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.logo:hover {
+  color: #ff006e;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.6);
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  justify-content: center;  /* ← Centra los links */
+  flex-wrap: wrap;
+}
+
+.nav-links li {
+  margin: 0;
+}
+
+.nav-links a {
+  color: #00d9ff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.nav-links a:hover {
+  background-color: rgba(0, 217, 255, 0.1);
+  color: #ff006e;
+  text-shadow: 0 0 8px rgba(255, 0, 110, 0.5);
+}
+
+.carrito-link {
+  background-color: #ff006e;
+  color: #fff !important;
+  font-weight: bold;
+}
+
+.carrito-link:hover {
+  background-color: #ff1493;
+  text-shadow: none;
+}
+
+.carrito {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  .logo-text {
+    display: none;
+  }
+}

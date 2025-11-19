@@ -1,0 +1,50 @@
+.seccion-pagina {
+  margin-top: 2rem;
+}
+
+.lista-blogs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.blog-card {
+  background: rgba(26, 31, 58, 0.8);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 0, 110, 0.3);
+}
+
+.contenido-blog,
+.contenido-nosotros,
+.detalles-producto {
+  background: rgba(26, 31, 58, 0.8);
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid rgba(45, 27, 78, 0.8);
+  margin-top: 2rem;
+}
+
+.caso-imagen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.caso-imagen img {
+  max-width: 100%;
+  width: 500px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .caso-imagen img {
+    width: 100%;
+    max-width: 400px;
+  }
+}
