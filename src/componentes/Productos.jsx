@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import '../estilos/Productos.css';
+import { obtenerProductos } from '../servicios/api.js';
+
 
 function Productos() {
-  const [productos] = useState([
+  const [productos, setProductos] = useState([
     {
       id: 'dune',
       nombre: 'Dune',
@@ -256,9 +258,35 @@ function Productos() {
     alert(`✅ ${producto.nombre} agregado al carrito!`);
   };
 
-  useEffect(() => {
-    actualizarContador();
-  }, [actualizarContador]);
+// Integración con el backend
+useEffect(() => {
+  const cargarDesdeBackend = async () => {
+    try {
+      const respuesta = await obtenerProductos(); 
+
+      if (respuesta && Array.isArray(respuesta.data)) {
+        const productosAdaptados = respuesta.data.map((p) => ({
+          id: p.id,
+          nombre: p.titulo,
+          autor: p.autor,
+          precio: p.precio,
+          categoria: p.categoriaId,
+          descripcion: p.descripcion,
+          img_delantera: p.imagen,
+          img_trasera: p.imagenBack || 'placeholder.jpg',
+        }));
+
+        setProductos(productosAdaptados);
+      }
+    } catch (error) {
+      console.error('Error cargando productos desde el backend:', error);
+    } finally {
+      actualizarContador();
+    }
+  };
+
+  cargarDesdeBackend();
+}, [actualizarContador]);
 
   return (
     <main>
@@ -270,7 +298,6 @@ function Productos() {
               <img
                 src={`${process.env.PUBLIC_URL}/imagenes/${prod.img_delantera}`}
                 alt={`Portada del libro ${prod.nombre}`}
-                onError={(e) => (e.target.src = `${process.env.PUBLIC_URL}/imagenes/placeholder.jpg`)}
               />
               <Link to={`/producto/${prod.id}`} className="titulo-producto">
                 {prod.nombre}

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../estilos/Comprar.css';
+import { procesarPago } from '../servicios/api.js';
 
 const REGIONES_COMUNAS = {
   "arica_parinacota": ["Arica", "Camarones", "Putre", "General Lagos"],
@@ -34,7 +35,7 @@ export default function Comprar() {
     departamento: '',
     region: '',
     comuna: '',
-    indicaciones: ''
+    indicaciones: '',
   });
   const [comunas, setComunas] = useState([]);
 
@@ -44,74 +45,100 @@ export default function Comprar() {
   }, []);
 
   const cargarCarrito = () => {
-    const carritoGuardado = JSON.parse(localStorage.getItem("carrito")) || [];
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
     setCarrito(carritoGuardado);
-    const totalCalculado = carritoGuardado.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
+    const totalCalculado = carritoGuardado.reduce(
+      (sum, p) => sum + p.precio * p.cantidad,
+      0
+    );
     setTotal(totalCalculado);
   };
 
   const cargarDatosGuardados = () => {
-    const datosTemp = JSON.parse(localStorage.getItem("datosCompraTemporal"));
+    const datosTemp = JSON.parse(localStorage.getItem('datosCompraTemporal'));
     if (datosTemp) {
       setFormData(datosTemp);
       if (datosTemp.region && REGIONES_COMUNAS[datosTemp.region]) {
         setComunas(REGIONES_COMUNAS[datosTemp.region]);
       }
-      localStorage.removeItem("datosCompraTemporal");
+      localStorage.removeItem('datosCompraTemporal');
     }
   };
 
   const validarCorreo = (email) => {
     const dominiosValidos = ['@duoc.cl', '@profesor.duoc.cl', '@gmail.com'];
-    return dominiosValidos.some(dominio => email.toLowerCase().endsWith(dominio));
+    return dominiosValidos.some((dominio) =>
+      email.toLowerCase().endsWith(dominio)
+    );
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (name === 'region' && REGIONES_COMUNAS[value]) {
       setComunas(REGIONES_COMUNAS[value]);
-      setFormData(prev => ({ ...prev, comuna: '' }));
+      setFormData((prev) => ({ ...prev, comuna: '' }));
     }
   };
 
   const aplicarDescuento = () => {
-    alert("Función de descuento disponible próximamente");
+    alert('Función de descuento disponible próximamente');
   };
 
-  const procesarCompra = (e) => {
+  // INTEGRADO CON BACKEND 
+  const procesarCompra = async (e) => {
     e.preventDefault();
 
     // VALIDACIÓN 1: Carrito vacío
     if (carrito.length === 0) {
-      alert("El carrito está vacío");
+      alert('El carrito está vacío');
       return;
     }
 
-    // VALIDACIÓN 2: Email inválido 
+    // VALIDACIÓN 2: Email inválido
     if (!validarCorreo(formData.email)) {
-      localStorage.setItem("datosFormularioError", JSON.stringify({
-        ...formData,
-        razonError: "❌ Correo inválido - Solo se aceptan dominios @duoc.cl, @profesor.duoc.cl o @gmail.com"
-      }));
+      localStorage.setItem(
+        'datosFormularioError',
+        JSON.stringify({
+          ...formData,
+          razonError:
+            '❌ Correo inválido - Solo se aceptan dominios @duoc.cl, @profesor.duoc.cl o @gmail.com',
+        })
+      );
       navigate('/pago-error');
       return;
     }
 
-    // VALIDACIÓN 3: Campos incompletos 
-    if (!formData.calle || !formData.region || !formData.comuna || !formData.nombre || !formData.apellidos) {
-      localStorage.setItem("datosFormularioError", JSON.stringify({
-        ...formData,
-        razonError: "❌ Campos incompletos - Por favor completa todos los datos requeridos"
-      }));
+    // VALIDACIÓN 3: Campos incompletos
+    if (
+      !formData.calle ||
+      !formData.region ||
+      !formData.comuna ||
+      !formData.nombre ||
+      !formData.apellidos
+    ) {
+      localStorage.setItem(
+        'datosFormularioError',
+        JSON.stringify({
+          ...formData,
+          razonError:
+            '❌ Campos incompletos - Por favor completa todos los datos requeridos',
+        })
+      );
       navigate('/pago-error');
       return;
     }
 
-    // COMPRA EXITOSA 
+    // ID de pedido que se usa en TODO el flujo (backend pagos + localStorage)
+    const pedidoId = Date.now(); 
+
+    // COMPRA EXITOSA (pedido local)
     const compra = {
-      id: Date.now(),
+      pedidoId, 
+      codigoOrden: `ORD#${pedidoId}`, 
+      id: pedidoId, 
+
       fecha: new Date().toLocaleDateString('es-ES'),
       cliente: `${formData.nombre} ${formData.apellidos}`,
       email: formData.email,
@@ -120,35 +147,52 @@ export default function Comprar() {
         departamento: formData.departamento,
         region: formData.region,
         comuna: formData.comuna,
-        indicaciones: formData.indicaciones
+        indicaciones: formData.indicaciones,
       },
       productos: carrito,
-      total: total
+      total: total,
     };
 
-    let compras = JSON.parse(localStorage.getItem("compras")) || [];
+    // Guardar compra en localStorage con pedidoId numérico
+    let compras = JSON.parse(localStorage.getItem('compras')) || [];
     compras.push(compra);
-    localStorage.setItem("compras", JSON.stringify(compras));
-    localStorage.removeItem("carrito");
-    localStorage.removeItem("datosFormularioError");
+    localStorage.setItem('compras', JSON.stringify(compras));
+    localStorage.removeItem('carrito');
+    localStorage.removeItem('datosFormularioError'); // ya es compra válida
 
-    // Navegar a página de pago exitoso
+    // llamar al microservicio de pagos
+    try {
+      
+      const pagoRespuesta = await procesarPago(
+        pedidoId,
+        total,
+        'TarjetaCredito'
+      ); // POST /api/v1/pagos/procesar/{pedidoId}
+      console.log('Pago procesado en backend:', pagoRespuesta);
+    } catch (error) {
+      console.error('Error al procesar el pago en el backend:', error);
+    }
+
+
     navigate('/pago-correcto');
   };
 
   const scrollFormulario = () => {
-    document.getElementById('formCheckout')?.scrollIntoView({ behavior: 'smooth' });
+    document
+      .getElementById('formCheckout')
+      ?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <>
-      
       <div className="checkout-container">
         <div className="checkout-grid">
           {/* LADO IZQUIERDO */}
           <div className="checkout-left">
             <h2>Carrito de compra</h2>
-            <p className="checkout-subtitle">Completa la siguiente información</p>
+            <p className="checkout-subtitle">
+              Completa la siguiente información
+            </p>
 
             <table className="tabla-checkout">
               <thead>
@@ -163,24 +207,36 @@ export default function Comprar() {
               <tbody>
                 {carrito.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                    <td
+                      colSpan="5"
+                      style={{
+                        textAlign: 'center',
+                        padding: '20px',
+                        color: '#999',
+                      }}
+                    >
                       El carrito está vacío
                     </td>
                   </tr>
                 ) : (
-                  carrito.map(producto => (
+                  carrito.map((producto) => (
                     <tr key={producto.id}>
-                        <td>
-                        <img 
-                            src={`/imagenes/${producto.imagen}`} 
-                            alt={producto.nombre}
-                            style={{ width: '50px', height: 'auto' }}
+                      <td>
+                        <img
+                          src={`/imagenes/${producto.imagen}`}
+                          alt={producto.nombre}
+                          style={{ width: '50px', height: 'auto' }}
                         />
-                        </td>
+                      </td>
                       <td>{producto.nombre}</td>
                       <td>${producto.precio.toLocaleString()}</td>
                       <td>{producto.cantidad}</td>
-                      <td>${(producto.precio * producto.cantidad).toLocaleString()}</td>
+                      <td>
+                        $
+                        {(
+                          producto.precio * producto.cantidad
+                        ).toLocaleString()}
+                      </td>
                     </tr>
                   ))
                 )}
@@ -188,8 +244,18 @@ export default function Comprar() {
             </table>
 
             <div className="descuento-section">
-              <input type="text" placeholder="Ingrese código de descuento" className="input-descuento" />
-              <button type="button" className="btn-aplicar" onClick={aplicarDescuento}>Aplicar</button>
+              <input
+                type="text"
+                placeholder="Ingrese código de descuento"
+                className="input-descuento"
+              />
+              <button
+                type="button"
+                className="btn-aplicar"
+                onClick={aplicarDescuento}
+              >
+                Aplicar
+              </button>
             </div>
           </div>
 
@@ -198,13 +264,19 @@ export default function Comprar() {
             <h3>Total</h3>
             <p className="total-price">${total.toLocaleString()}</p>
 
-            <button type="button" className="btn-comprar-visible" onClick={scrollFormulario}>
+            <button
+              type="button"
+              className="btn-comprar-visible"
+              onClick={scrollFormulario}
+            >
               Comprar ahora ${total.toLocaleString()}
             </button>
 
             <form id="formCheckout" onSubmit={procesarCompra}>
               <h3>Información del cliente</h3>
-              <p className="form-subtitle">Completa la siguiente información</p>
+              <p className="form-subtitle">
+                Completa la siguiente información
+              </p>
 
               <div className="form-row">
                 <div className="form-group">
@@ -232,7 +304,12 @@ export default function Comprar() {
               </div>
 
               <div className="form-group">
-                <label>Correo* <small style={{ color: '#999' }}>(Dominio: @duoc.cl, @profesor.duoc.cl o @gmail.com)</small></label>
+                <label>
+                  Correo*{' '}
+                  <small style={{ color: '#999' }}>
+                    (Dominio: @duoc.cl, @profesor.duoc.cl o @gmail.com)
+                  </small>
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -243,8 +320,12 @@ export default function Comprar() {
                 />
               </div>
 
-              <h3 className="form-title">Dirección de entrega de los productos</h3>
-              <p className="form-subtitle">Ingrese dirección de forma ordenada</p>
+              <h3 className="form-title">
+                Dirección de entrega de los productos
+              </h3>
+              <p className="form-subtitle">
+                Ingrese dirección de forma ordenada
+              </p>
 
               <div className="form-row">
                 <div className="form-group">
@@ -272,7 +353,12 @@ export default function Comprar() {
 
               <div className="form-row">
                 <div style={{ flex: 1, minWidth: '180px' }}>
-                  <label htmlFor="region" style={{ marginBottom: '5px', display: 'block' }}>Región*</label>
+                  <label
+                    htmlFor="region"
+                    style={{ marginBottom: '5px', display: 'block' }}
+                  >
+                    Región*
+                  </label>
                   <select
                     id="region"
                     name="region"
@@ -282,13 +368,19 @@ export default function Comprar() {
                     style={{ width: '100%' }}
                   >
                     <option value="">Seleccione la región...</option>
-                    <option value="arica_parinacota">Región de Arica y Parinacota</option>
+                    <option value="arica_parinacota">
+                      Región de Arica y Parinacota
+                    </option>
                     <option value="tarapaca">Región de Tarapacá</option>
-                    <option value="antofagasta">Región de Antofagasta</option>
+                    <option value="antofagasta">
+                      Región de Antofagasta
+                    </option>
                     <option value="atacama">Región de Atacama</option>
                     <option value="coquimbo">Región de Coquimbo</option>
                     <option value="valparaiso">Región de Valparaíso</option>
-                    <option value="ohiggins">Región del Libertador General Bernardo O'Higgins</option>
+                    <option value="ohiggins">
+                      Región del Libertador General Bernardo O'Higgins
+                    </option>
                     <option value="maule">Región del Maule</option>
                     <option value="nuble">Región de Ñuble</option>
                     <option value="biobio">Región del Biobío</option>
@@ -296,13 +388,22 @@ export default function Comprar() {
                     <option value="los_rios">Región de Los Ríos</option>
                     <option value="los_lagos">Región de Los Lagos</option>
                     <option value="aysen">Región de Aysén</option>
-                    <option value="magallanes">Región de Magallanes y de la Antártica Chilena</option>
-                    <option value="metropolitana">Región Metropolitana de Santiago</option>
+                    <option value="magallanes">
+                      Región de Magallanes y de la Antártica Chilena
+                    </option>
+                    <option value="metropolitana">
+                      Región Metropolitana de Santiago
+                    </option>
                   </select>
                 </div>
 
                 <div style={{ flex: 1, minWidth: '180px' }}>
-                  <label htmlFor="comuna" style={{ marginBottom: '5px', display: 'block' }}>Comuna*</label>
+                  <label
+                    htmlFor="comuna"
+                    style={{ marginBottom: '5px', display: 'block' }}
+                  >
+                    Comuna*
+                  </label>
                   <select
                     id="comuna"
                     name="comuna"
@@ -312,8 +413,11 @@ export default function Comprar() {
                     style={{ width: '100%' }}
                   >
                     <option value="">Seleccione la comuna...</option>
-                    {comunas.map(comuna => (
-                      <option key={comuna} value={comuna.toLowerCase().replace(/\s+/g, '_')}>
+                    {comunas.map((comuna) => (
+                      <option
+                        key={comuna}
+                        value={comuna.toLowerCase().replace(/\s+/g, '_')}
+                      >
                         {comuna}
                       </option>
                     ))}

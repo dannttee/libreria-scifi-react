@@ -1,6 +1,62 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../estilos/RegistroUsuario.css';
+import { registrarUsuario } from '../servicios/api.js';
+
+// === REGIONES Y COMUNAS (mismo mapa que en Comprar.jsx) ===
+const REGIONES_COMUNAS = {
+  arica_parinacota: ['Arica', 'Camarones', 'Putre', 'General Lagos'],
+  tarapaca: ['Iquique', 'Alto Hospicio', 'Pozo Almonte', 'Camiña', 'Colchane', 'Huara', 'Pica'],
+  antofagasta: ['Antofagasta', 'Mejillones', 'Sierra Gorda', 'Taltal', 'Calama', 'Ollagüe', 'San Pedro de Atacama', 'Tocopilla', 'María Elena'],
+  atacama: ['Copiapó', 'Caldera', 'Tierra Amarilla', 'Chañaral', 'Diego de Almagro', 'Vallenar', 'Alto del Carmen', 'Freirina', 'Huasco'],
+  coquimbo: ['La Serena', 'Coquimbo', 'Andacollo', 'La Higuera', 'Paihuano', 'Vicuña', 'Illapel', 'Canela', 'Los Vilos', 'Salamanca', 'Ovalle', 'Combarbalá', 'Monte Patria', 'Punitaqui', 'Río Hurtado'],
+  valparaiso: ['Valparaíso', 'Casablanca', 'Concón', 'Juan Fernández', 'Puchuncaví', 'Quintero', 'Viña del Mar', 'Quilpué', 'Villa Alemana', 'Limache', 'Olmué', 'Quillota', 'La Calera', 'Hijuelas', 'Nogales', 'La Cruz', 'San Antonio', 'Cartagena', 'El Quisco', 'El Tabo', 'Algarrobo', 'Santo Domingo', 'San Felipe', 'Catemu', 'Llaillay', 'Panquehue', 'Putaendo', 'Santa María', 'Los Andes', 'Calle Larga', 'Rinconada', 'San Esteban', 'Isla de Pascua'],
+  ohiggins: ['Rancagua', 'Machalí', 'Graneros', 'Mostazal', 'Codegua', 'Coinco', 'Coltauco', 'Doñihue', 'Olivar', 'Peumo', 'Pichidegua', 'Quinta de Tilcoco', 'Requínoa', 'Rengo', 'San Vicente de Tagua Tagua', 'San Fernando', 'Chimbarongo', 'Nancagua', 'Placilla', 'Santa Cruz', 'Lolol', 'Palmilla', 'Peralillo', 'Pumanque', 'Chépica', 'Litueche', 'Navidad', 'Pichilemu', 'La Estrella', 'Marchigüe'],
+  maule: ['Talca', 'Constitución', 'Curepto', 'Empedrado', 'Maule', 'Pencahue', 'Río Claro', 'San Clemente', 'San Rafael', 'Curicó', 'Hualañé', 'Licantén', 'Molina', 'Rauco', 'Romeral', 'Sagrada Familia', 'Teno', 'Vichuquén', 'Linares', 'Colbún', 'Longaví', 'Parral', 'Retiro', 'San Javier', 'Villa Alegre', 'Yerbas Buenas', 'Cauquenes', 'Pelluhue', 'Chanco'],
+  nuble: ['Chillán', 'Chillán Viejo', 'Bulnes', 'Cobquecura', 'Coelemu', 'Coihueco', 'El Carmen', 'Ninhue', 'Ñiquén', 'Portezuelo', 'Pemuco', 'Quillón', 'Quirihue', 'Ránquil', 'San Carlos', 'San Fabián', 'San Ignacio', 'San Nicolás', 'Trehuaco', 'Yungay'],
+  biobio: ['Concepción', 'Coronel', 'Chiguayante', 'Florida', 'Hualpén', 'Hualqui', 'Lota', 'Penco', 'San Pedro de la Paz', 'Santa Juana', 'Tomé', 'Arauco', 'Cañete', 'Contulmo', 'Curanilahue', 'Lebu', 'Los Álamos', 'Tirúa', 'Angol'],
+  araucania: ['Temuco', 'Padre Las Casas', 'Vilcún', 'Cunco', 'Melipeuco', 'Curacautín', 'Lonquimay', 'Lautaro', 'Perquenco', 'Galvarino', 'Cholchol', 'Carahue', 'Saavedra', 'Teodoro Schmidt', 'Toltén', 'Villarrica', 'Freire', 'Gorbea', 'Lanco', 'Pitrufquén', 'Pucón'],
+  los_rios: ['Valdivia', 'Corral', 'Lanco', 'Los Lagos', 'Máfil', 'Mariquina', 'Paillaco', 'Panguipulli', 'La Unión', 'Futrono', 'Lago Ranco', 'Río Bueno'],
+  los_lagos: ['Ancud', 'Puerto Montt', 'Dalcahue', 'Puqueldón', 'Queilén', 'Quemchi', 'Quellón', 'Quinchao', 'Calbuco', 'Cochamó', 'Chonchi', 'Curaco de Vélez', 'Fresia', 'Frutillar', 'Llanquihue', 'Maullín', 'Los Muermos', 'Puerto Varas', 'Castro', 'Osorno', 'Puerto Octay', 'Río Negro', 'Purranque', 'Puyehue', 'San Juan de la Costa', 'San Pablo'],
+  aysen: ['Coihaique', 'Cisnes', 'Guaitecas', 'Cochrane', 'Aysén', 'Río Ibáñez', 'Tortel', 'Gonzalo Corvez'],
+  magallanes: ['Punta Arenas', 'Puerto Natales', 'Torres del Paine', 'Porvenir', 'Primavera', 'Timaukel', 'Cabo de Hornos', 'Antártica Chilena'],
+  metropolitana: [
+    'Santiago',
+    'Cerrillos',
+    'Cerro Navia',
+    'Conchalí',
+    'El Bosque',
+    'Estación Central',
+    'Huechuraba',
+    'Independencia',
+    'La Cisterna',
+    'La Florida',
+    'La Granja',
+    'La Pintana',
+    'La Reina',
+    'Las Condes',
+    'Lo Barnechea',
+    'Lo Prado',
+    'Macul',
+    'Maipú',
+    'Ñuñoa',
+    'Padre Hurtado',
+    'Pedro Aguirre Cerda',
+    'Peñalolén',
+    'Providencia',
+    'Pudahuel',
+    'Quilicura',
+    'Recoleta',
+    'Rinconada',
+    'San Borja',
+    'San José de Maipo',
+    'San Miguel',
+    'San Pedro',
+    'San Ramón',
+    'Vitacura',
+    'Puente Alto',
+  ],
+};
 
 function RegistroUsuario() {
   const navigate = useNavigate();
@@ -12,23 +68,37 @@ function RegistroUsuario() {
     password2: '',
     telefono: '',
     region: '',
-    comuna: ''
+    comuna: '',
   });
 
   const [errors, setErrors] = useState({});
+  const [comunas, setComunas] = useState([]); // <-- NUEVO
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    // Limpiar error cuando el usuario empieza a escribir
+
+    // Limpiar error
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: '',
       }));
+    }
+
+    // Si cambia la región, actualizar comunas disponibles
+    if (name === 'region') {
+      if (REGIONES_COMUNAS[value]) {
+        setComunas(REGIONES_COMUNAS[value]);
+      } else {
+        setComunas([]);
+      }
+      // resetear comuna seleccionada
+      setFormData((prev) => ({ ...prev, comuna: '' }));
     }
   };
 
@@ -41,7 +111,8 @@ function RegistroUsuario() {
 
     const emailPattern = /^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/i;
     if (!formData.correo1 || formData.correo1.length > 100 || !emailPattern.test(formData.correo1)) {
-      newErrors.correo1 = 'Correo inválido o no permitido. Usa @duoc.cl, @profesor.duoc.cl o @gmail.com máximo 100 caracteres.';
+      newErrors.correo1 =
+        'Correo inválido o no permitido. Usa @duoc.cl, @profesor.duoc.cl o @gmail.com máximo 100 caracteres.';
     }
 
     if (!formData.correo2 || formData.correo1 !== formData.correo2) {
@@ -66,8 +137,8 @@ function RegistroUsuario() {
 
     return newErrors;
   };
-
-  const handleSubmit = (e) => {
+  //llamada al backend para registrar usuario
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
 
@@ -76,37 +147,46 @@ function RegistroUsuario() {
       return;
     }
 
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    const payload = {
+  nombre: formData.nombre.trim(),
+  email: formData.correo1.trim(),
+  password: formData.password1,
+  telefono: formData.telefono || null,
+  region: formData.region,
+  comuna: formData.comuna,
+};
 
-    if (usuarios.some(u => u.correo1 === formData.correo1.trim())) {
-      setErrors({ correo1: "El correo ya está registrado" });
-      return;
-    }
+console.log('Payload que se enviará:', payload);
 
-    usuarios.push({
-      nombre: formData.nombre.trim(),
-      correo1: formData.correo1.trim(),
-      password1: formData.password1,
-      region: formData.region,
-      comuna: formData.comuna
-    });
+const respuesta = await registrarUsuario(payload);
+console.log('Respuesta JSON registro:', respuesta);
 
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
-    localStorage.setItem("usuarioNombre", formData.nombre.trim());
-
-    alert("Registro exitoso. Serás redirigido a la página principal.");
-    navigate("/");
+// Ajustado a la respuesta del backend
+if (respuesta && respuesta.success) {
+  localStorage.setItem('usuarioNombre', formData.nombre.trim());
+  alert(respuesta.message || 'Registro exitoso. Ahora puedes iniciar sesión.');
+  navigate('/iniciar-sesion');
+} else if (respuesta && respuesta.message) {
+  alert(respuesta.message);
+} else {
+  alert('No se pudo registrar el usuario.');
+}
   };
 
   return (
     <div className="registro-contenedor">
       <div style={{ textAlign: 'center', marginBottom: '1.8rem' }}>
-        <img src={`${process.env.PUBLIC_URL}/imagenes/logotienda.png`} alt="Logo Librería SciFiTerror" style={{ width: '250px', height: 'auto', marginBottom: '0.5rem' }} />
+        <img
+          src={`${process.env.PUBLIC_URL}/imagenes/logotienda.png`}
+          alt="Logo Librería SciFiTerror"
+          style={{ width: '250px', height: 'auto', marginBottom: '0.5rem' }}
+        />
         <div style={{ fontWeight: 700, fontSize: '1.4rem', color: '#112d4e' }}>Librería SciFiTerror</div>
       </div>
 
       <div className="form-titulo">Registro de usuario</div>
       <form onSubmit={handleSubmit} noValidate>
+        {/* Nombre */}
         <div className="form-group">
           <label htmlFor="nombre">Nombre completo</label>
           <input
@@ -121,6 +201,7 @@ function RegistroUsuario() {
           {errors.nombre && <div className="error-msg">{errors.nombre}</div>}
         </div>
 
+        {/* Correo 1 */}
         <div className="form-group">
           <label htmlFor="correo1">Correo electrónico</label>
           <input
@@ -135,6 +216,7 @@ function RegistroUsuario() {
           {errors.correo1 && <div className="error-msg">{errors.correo1}</div>}
         </div>
 
+        {/* Correo 2 */}
         <div className="form-group">
           <label htmlFor="correo2">Confirmar correo electrónico</label>
           <input
@@ -149,6 +231,7 @@ function RegistroUsuario() {
           {errors.correo2 && <div className="error-msg">{errors.correo2}</div>}
         </div>
 
+        {/* Contraseña 1 */}
         <div className="form-group">
           <label htmlFor="password1">Contraseña</label>
           <input
@@ -163,6 +246,7 @@ function RegistroUsuario() {
           {errors.password1 && <div className="error-msg">{errors.password1}</div>}
         </div>
 
+        {/* Contraseña 2 */}
         <div className="form-group">
           <label htmlFor="password2">Confirmar contraseña</label>
           <input
@@ -177,8 +261,11 @@ function RegistroUsuario() {
           {errors.password2 && <div className="error-msg">{errors.password2}</div>}
         </div>
 
+        {/* Teléfono */}
         <div className="form-group">
-          <label htmlFor="telefono">Teléfono <span style={{ fontWeight: 400, color: '#888' }}>(opcional)</span></label>
+          <label htmlFor="telefono">
+            Teléfono <span style={{ fontWeight: 400, color: '#888' }}>(opcional)</span>
+          </label>
           <input
             type="text"
             id="telefono"
@@ -189,9 +276,21 @@ function RegistroUsuario() {
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '16px', marginTop: '1.2rem', marginBottom: '2.2rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        {/* Región y Comuna */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '16px',
+            marginTop: '1.2rem',
+            marginBottom: '2.2rem',
+            alignItems: 'flex-end',
+            flexWrap: 'wrap',
+          }}
+        >
           <div style={{ flex: 1, minWidth: '180px' }}>
-            <label htmlFor="region" style={{ marginBottom: '5px', display: 'block' }}>Región</label>
+            <label htmlFor="region" style={{ marginBottom: '5px', display: 'block' }}>
+              Región
+            </label>
             <select
               id="region"
               name="region"
@@ -222,7 +321,9 @@ function RegistroUsuario() {
           </div>
 
           <div style={{ flex: 1, minWidth: '180px' }}>
-            <label htmlFor="comuna" style={{ marginBottom: '5px', display: 'block' }}>Comuna</label>
+            <label htmlFor="comuna" style={{ marginBottom: '5px', display: 'block' }}>
+              Comuna
+            </label>
             <select
               id="comuna"
               name="comuna"
@@ -232,49 +333,19 @@ function RegistroUsuario() {
               className={errors.comuna ? 'is-invalid' : ''}
             >
               <option value="">Seleccione la comuna...</option>
-              {/* Todas las comunas van aquí - por brevedad, incluyo solo Región Metropolitana */}
-              <optgroup label="Región Metropolitana de Santiago">
-                <option value="santiago">Santiago</option>
-                <option value="cerrillos">Cerrillos</option>
-                <option value="cerro_navia">Cerro Navia</option>
-                <option value="conchali">Conchalí</option>
-                <option value="el_bosque">El Bosque</option>
-                <option value="estacion_central">Estación Central</option>
-                <option value="huechuraba">Huechuraba</option>
-                <option value="independencia">Independencia</option>
-                <option value="la_cisterna">La Cisterna</option>
-                <option value="la_floresta">La Florida</option>
-                <option value="la_granja">La Granja</option>
-                <option value="la_pintana">La Pintana</option>
-                <option value="la_reina">La Reina</option>
-                <option value="las_condes">Las Condes</option>
-                <option value="lo_barnechea">Lo Barnechea</option>
-                <option value="lo_prado">Lo Prado</option>
-                <option value="macul">Macul</option>
-                <option value="maipu">Maipú</option>
-                <option value="nunoa">Ñuñoa</option>
-                <option value="padre_hurtado">Padre Hurtado</option>
-                <option value="pedro_aguirre">Pedro Aguirre Cerda</option>
-                <option value="penalolen">Peñalolén</option>
-                <option value="providencia">Providencia</option>
-                <option value="pudahuel">Pudahuel</option>
-                <option value="quilicura">Quilicura</option>
-                <option value="recoleta">Recoleta</option>
-                <option value="rinconada">Rinconada</option>
-                <option value="san_borja">San Borja</option>
-                <option value="san_jose_de_maipo">San José de Maipo</option>
-                <option value="san_miguel">San Miguel</option>
-                <option value="san_pedro">San Pedro</option>
-                <option value="san_ramon">San Ramón</option>
-                <option value="vitacura">Vitacura</option>
-                <option value="puente_alto">Puente Alto</option>
-              </optgroup>
+              {comunas.map((comuna) => (
+                <option key={comuna} value={comuna}>
+                  {comuna}
+                </option>
+              ))}
             </select>
             {errors.comuna && <div className="error-msg">{errors.comuna}</div>}
           </div>
         </div>
 
-        <button type="submit" className="boton">Registrarse</button>
+        <button type="submit" className="boton">
+          Registrarse
+        </button>
       </form>
     </div>
   );

@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import '../estilos/Carrito.css';
+import { obtenerProductos } from '../servicios/api.js';
 
 // ===== CONSTANTES =====
 const MAX_CANTIDAD = 99;
 const IMG_PATH = './imagenes/';
 const cupones = {
-  "SCI10": 0.10,
-  "TERROR20": 0.20,
-  "OFERTA5": 0.05
+  SCI10: 0.10,
+  TERROR20: 0.20,
+  OFERTA5: 0.05,
 };
 
-// ===== PRODUCTOS (8 LIBROS) =====
-const productos = [
+// ===== PRODUCTOS INICIALES (FALLBACK LOCAL) =====
+const PRODUCTOS_INICIALES = [
   {
     id: 'dune',
     nombre: 'Dune',
     autor: 'Frank Herbert',
     precio: 9092,
-    categoria: "Ciencia ficción",
+    categoria: 'Ciencia ficción',
     img_delantera: 'DUNE.jpg',
   },
   {
@@ -25,7 +26,7 @@ const productos = [
     nombre: 'Frankenstein',
     autor: 'Mary Shelley',
     precio: 10500,
-    categoria: "Terror",
+    categoria: 'Terror',
     img_delantera: 'FRANKENSTEIN.jpg',
   },
   {
@@ -33,7 +34,7 @@ const productos = [
     nombre: 'It',
     autor: 'Stephen King',
     precio: 7793,
-    categoria: "Terror",
+    categoria: 'Terror',
     img_delantera: 'it.jpg',
   },
   {
@@ -41,7 +42,7 @@ const productos = [
     nombre: 'Neuromante nº 01',
     autor: 'William Gibson',
     precio: 13990,
-    categoria: "Ciencia ficción",
+    categoria: 'Ciencia ficción',
     img_delantera: 'NEUROMANTE.jpg',
   },
   {
@@ -49,7 +50,7 @@ const productos = [
     nombre: 'El problema de los tres cuerpos',
     autor: 'Cixin Liu',
     precio: 14990,
-    categoria: "Ciencia ficción",
+    categoria: 'Ciencia ficción',
     img_delantera: 'El problema de los tres cuerpos.jpg',
   },
   {
@@ -57,7 +58,7 @@ const productos = [
     nombre: 'La llamada de Cthulhu',
     autor: 'H.P. Lovecraft',
     precio: 9990,
-    categoria: "Terror",
+    categoria: 'Terror',
     img_delantera: 'La llamada de Cthulhu.jpg',
   },
   {
@@ -65,7 +66,7 @@ const productos = [
     nombre: '1984',
     autor: 'George Orwell',
     precio: 7692,
-    categoria: "Novelas",
+    categoria: 'Novelas',
     img_delantera: '1984.jpg',
   },
   {
@@ -73,7 +74,7 @@ const productos = [
     nombre: 'Fahrenheit 451',
     autor: 'Ray Bradbury',
     precio: 10990,
-    categoria: "Ciencia ficción",
+    categoria: 'Ciencia ficción',
     img_delantera: 'Fahrenheit451.jpg',
   },
 ];
@@ -85,40 +86,63 @@ const normalizarNombreImagen = (rutaImagen) => {
   return rutaImagen.split('/').pop().split('\\').pop();
 };
 
+
 export function Carrito() {
   // ===== ESTADO =====
   const [carrito, setCarrito] = useState([]);
   const [descuentoAplicado, setDescuentoAplicado] = useState(0);
   const [couponCode, setCouponCode] = useState('');
+  const [productos, setProductos] = useState(PRODUCTOS_INICIALES);
 
   // ===== EFECTOS =====
+  // Cargar carrito desde localStorage
   useEffect(() => {
-    // Cargar carrito desde localStorage al montar
-    const carritoGuardado = localStorage.getItem("carrito");
+    const carritoGuardado = localStorage.getItem('carrito');
     if (carritoGuardado) {
       const carritoParsed = JSON.parse(carritoGuardado);
-      // Normalizar imágenes al cargar
-      const carritoNormalizado = carritoParsed.map(item => ({
+      const carritoNormalizado = carritoParsed.map((item) => ({
         ...item,
-        imagen: normalizarNombreImagen(item.imagen)
+        imagen: normalizarNombreImagen(item.imagen),
       }));
       setCarrito(carritoNormalizado);
     }
   }, []);
 
+  // Cargar productos desde el backend (microservicio productos)
+  useEffect(() => {
+    const cargarProductos = async () => {
+      try {
+        const data = await obtenerProductos(); // GET /api/v1/productos
+        const adaptados = data.map((p) => ({
+          id: p.id,
+          nombre: p.nombre || p.titulo,
+          autor: p.autor,
+          precio: p.precio,
+          categoria: p.categoria || 'Sin categoría',
+          img_delantera:
+            normalizarNombreImagen(p.imgDelantera || p.imagenPortada || 'placeholder.jpg'),
+        }));
+        setProductos(adaptados);
+      } catch (error) {
+        console.error('Error cargando productos para el carrito:', error);
+      }
+    };
+
+    cargarProductos();
+  }, []);
+
   // ===== FUNCIONES AUXILIARES =====
   const obtenerCarrito = () => {
-    const carritoJSON = localStorage.getItem("carrito");
+    const carritoJSON = localStorage.getItem('carrito');
     return carritoJSON ? JSON.parse(carritoJSON) : [];
   };
 
   const guardarCarrito = (nuevoCarrito) => {
-    // Normalizar imágenes antes de guardar
-    const carritoNormalizado = nuevoCarrito.map(item => ({
+    const carritoNormalizado = nuevoCarrito.map((item) => ({
       ...item,
-      imagen: normalizarNombreImagen(item.imagen)
+      imagen: normalizarNombreImagen(item.imagen),
     }));
-    localStorage.setItem("carrito", JSON.stringify(carritoNormalizado));
+    localStorage.setItem('carrito', JSON.stringify(carritoNormalizado));
     setCarrito(carritoNormalizado);
   };
 
@@ -138,7 +162,7 @@ export function Carrito() {
     }
 
     let carritoActual = obtenerCarrito();
-    const index = carritoActual.findIndex(item => item.id === producto.id);
+    const index = carritoActual.findIndex((item) => item.id === producto.id);
 
     if (index >= 0) {
       let nuevaCantidad = carritoActual[index].cantidad + cantidad;
@@ -154,7 +178,7 @@ export function Carrito() {
         autor: producto.autor,
         precio: producto.precio,
         imagen: normalizarNombreImagen(producto.img_delantera),
-        cantidad
+        cantidad,
       });
     }
 
@@ -165,7 +189,7 @@ export function Carrito() {
   // ===== MODIFICAR CANTIDAD =====
   const modificarCantidad = (id, cantidad) => {
     let carritoActual = obtenerCarrito();
-    const index = carritoActual.findIndex(item => item.id === id);
+    const index = carritoActual.findIndex((item) => item.id === id);
 
     if (index >= 0) {
       if (cantidad < 1) {
@@ -184,7 +208,7 @@ export function Carrito() {
   // ===== ELIMINAR DEL CARRITO =====
   const eliminarDelCarrito = (id) => {
     let carritoActual = obtenerCarrito();
-    carritoActual = carritoActual.filter(item => item.id !== id);
+    carritoActual = carritoActual.filter((item) => item.id !== id);
     guardarCarrito(carritoActual);
   };
 
@@ -196,29 +220,29 @@ export function Carrito() {
       setDescuentoAplicado(descuento);
       alert(`Cupón aplicado! Tienes un ${descuento * 100}% de descuento.`);
     } else {
-      alert("Código de descuento inválido o no reconocido.");
+      alert('Código de descuento inválido o no reconocido.');
       setDescuentoAplicado(0);
     }
   };
 
   // ===== LIMPIAR CARRITO =====
   const limpiarCarrito = () => {
-    if (window.confirm("¿Estás seguro de que quieres limpiar el carrito?")) {
-      localStorage.removeItem("carrito");
+    if (window.confirm('¿Estás seguro de que quieres limpiar el carrito?')) {
+      localStorage.removeItem('carrito');
       setCarrito([]);
       setDescuentoAplicado(0);
       setCouponCode('');
     }
   };
 
-  // ===== IR A COMPRA =====
+  // ===== IR A COMPRA (mantienes tu flujo actual) =====
   const irACompra = () => {
     if (!carrito || carrito.length === 0) {
-      alert("❌ El carrito está vacío. Añade productos antes de ir a pago.");
+      alert('❌ El carrito está vacío. Añade productos antes de ir a pago.');
       return;
     }
-    alert("✅ Procediendo al comprar...");
-    window.location.href = "Comprar";
+    alert('✅ Procediendo al comprar...');
+    window.location.href = 'Comprar';
   };
 
   // ===== CÁLCULOS =====
@@ -235,15 +259,15 @@ export function Carrito() {
           <div className="productos-grid">
             {productos.map((prod) => (
               <div key={prod.id} className="producto-compra">
-                <img 
-                  src={`${IMG_PATH}${prod.img_delantera}`} 
-                  alt={`Portada del libro ${prod.nombre}`} 
+                <img
+                  src={`${IMG_PATH}${prod.img_delantera}`}
+                  alt={`Portada del libro ${prod.nombre}`}
                 />
                 <p className="producto-nombre">{prod.nombre}</p>
                 <span className="producto-categoria">{prod.categoria}</span>
                 <p className="producto-precio">${prod.precio.toLocaleString()}</p>
                 <p className="producto-stock">Stock Disponible</p>
-                <button 
+                <button
                   className="btn-agregar-compra"
                   onClick={() => agregarAlCarrito(prod, 1)}
                 >
@@ -273,7 +297,15 @@ export function Carrito() {
             <tbody>
               {carrito.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', color: '#777', fontSize: '1.1rem', padding: '40px 0' }}>
+                  <td
+                    colSpan="6"
+                    style={{
+                      textAlign: 'center',
+                      color: '#777',
+                      fontSize: '1.1rem',
+                      padding: '40px 0',
+                    }}
+                  >
                     El carrito está vacío.
                   </td>
                 </tr>
@@ -281,28 +313,32 @@ export function Carrito() {
                 carrito.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <img 
-                        src={`${IMG_PATH}${item.imagen}`} 
+                      <img
+                        src={`${IMG_PATH}${item.imagen}`}
                         alt={`Portada de ${item.nombre}`}
                         className="tabla-img"
-                        onError={(e) => { e.target.src = IMG_PATH + 'placeholder.jpg'; }}
+                        onError={(e) => {
+                          e.target.src = IMG_PATH + 'placeholder.jpg';
+                        }}
                       />
                     </td>
                     <td>{item.nombre}</td>
                     <td>${item.precio.toLocaleString()}</td>
                     <td>
-                      <input 
-                        type="number" 
-                        value={item.cantidad} 
-                        min="1" 
+                      <input
+                        type="number"
+                        value={item.cantidad}
+                        min="1"
                         max={MAX_CANTIDAD}
                         className="cantidad-input"
-                        onChange={(e) => modificarCantidad(item.id, parseInt(e.target.value) || 1)}
+                        onChange={(e) =>
+                          modificarCantidad(item.id, parseInt(e.target.value) || 1)
+                        }
                       />
                     </td>
                     <td>${(item.cantidad * item.precio).toLocaleString()}</td>
                     <td>
-                      <button 
+                      <button
                         className="btn-eliminar-tabla"
                         onClick={() => eliminarDelCarrito(item.id)}
                       >
@@ -317,9 +353,9 @@ export function Carrito() {
 
           {/* SECCIÓN DE DESCUENTO */}
           <div className="descuento-section">
-            <input 
-              type="text" 
-              className="input-descuento" 
+            <input
+              type="text"
+              className="input-descuento"
               placeholder="Ingrese código de descuento"
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
@@ -332,7 +368,12 @@ export function Carrito() {
           {/* TOTAL */}
           <div className="total-row">
             <strong>Total</strong>
-            <strong>${totalConDescuento.toLocaleString(undefined, { minimumFractionDigits: 0 })}</strong>
+            <strong>
+              $
+              {totalConDescuento.toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+              })}
+            </strong>
           </div>
 
           {/* ACCIONES */}
@@ -351,3 +392,4 @@ export function Carrito() {
 }
 
 export default Carrito;
+

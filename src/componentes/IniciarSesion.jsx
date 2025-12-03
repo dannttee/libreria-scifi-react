@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../estilos/IniciarSesion.css';
+import { loginUsuario } from '../servicios/api.js';
 
 export default function IniciarSesion() {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export default function IniciarSesion() {
     return password.length >= 4 && password.length <= 10;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let isValid = true;
     const newErrors = { correo: false, contrasena: false };
@@ -82,34 +83,46 @@ export default function IniciarSesion() {
       return;
     }
 
-    // Obtener usuarios guardados en registro
-    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    try {
+  // llamada al backend para iniciar sesión
+  const usuarioBackend = await loginUsuario({
+    email: correo,
+    password: formData.contrasena,
+  });
 
-    // Buscar usuario válido
-    const usuarioValido = usuarios.find(
-      (u) => u.correo1 === correo && u.password1 === formData.contrasena
+  console.log('Respuesta login:', usuarioBackend);
+
+  // Ajustado a la respuesta real del API (/usuario/login)
+  if (usuarioBackend && usuarioBackend.success) {
+    const usuario = usuarioBackend.usuario || {};
+
+    // Guardar datos si "recordarme" está activo
+    if (formData.rememberMe) {
+      localStorage.setItem('correo', correo);
+      localStorage.setItem('contrasena', formData.contrasena);
+      localStorage.setItem('rememberMe', 'true');
+    } else {
+      localStorage.removeItem('correo');
+      localStorage.removeItem('contrasena');
+      localStorage.setItem('rememberMe', 'false');
+    }
+
+    // Guardar info del usuario logueado
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+    localStorage.setItem(
+      'usuarioNombre',
+      usuario.nombre || usuario.username || correo
     );
 
-    if (usuarioValido) {
-      // Guardar datos si "recordarme" está activo
-      if (formData.rememberMe) {
-        localStorage.setItem('correo', correo);
-        localStorage.setItem('contrasena', formData.contrasena);
-        localStorage.setItem('rememberMe', 'true');
-      } else {
-        localStorage.removeItem('correo');
-        localStorage.removeItem('contrasena');
-        localStorage.setItem('rememberMe', 'false');
-      }
-
-      // Guardar el nombre completo para mostrar luego
-      localStorage.setItem('usuarioNombre', usuarioValido.nombre);
-
-      alert('Inicio de sesión exitoso.');
-      navigate('/'); // Cambia a tu ruta principal
-    } else {
-      alert('Correo o contraseña incorrectos.');
-    }
+    alert(usuarioBackend.message || 'Inicio de sesión exitoso.');
+    navigate('/'); // Ruta principal
+  } else {
+    alert(usuarioBackend.message || 'Correo o contraseña incorrectos.');
+  }
+} catch (error) {
+  console.error('Error al iniciar sesión:', error);
+  alert('Error al conectar con el servidor.');
+}
   };
 
   return (
