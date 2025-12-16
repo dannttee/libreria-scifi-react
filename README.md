@@ -61,3 +61,5 @@ Swagger / OpenAPI: el backend expone la documentación de los endpoints REST, lo
 Herramientas del navegador (pestaña Network): durante una compra se inspeccionan las peticiones POST y GET hacia los endpoints de pedidos y pagos, verificando URLs, parámetros, códigos de estado HTTP y cuerpos de respuesta.
 
 Pruebas funcionales end‑to‑end: se recorrió el flujo completo (registro / login, navegación por productos, carrito, checkout, pago y visualización de compra realizada) confirmando que los datos mostrados en React coinciden con los registrados en la base de datos a través del backend.
+
+Implementacion de API meteorologico para los pedidos
