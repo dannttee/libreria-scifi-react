@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../estilos/Comprar.css';
 import { procesarPago } from '../servicios/api.js';
+import ClimaWidget from './ClimaWidget';
 
 const REGIONES_COMUNAS = {
   "arica_parinacota": ["Arica", "Camarones", "Putre", "General Lagos"],
@@ -261,6 +262,9 @@ export default function Comprar() {
 
           {/* LADO DERECHO */}
           <div className="resumen-box">
+            <div style={{ marginBottom: '20px' }}>
+                <ClimaWidget />
+            </div>
             <h3>Total</h3>
             <p className="total-price">${total.toLocaleString()}</p>
 
